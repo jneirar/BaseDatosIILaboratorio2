@@ -76,5 +76,11 @@ int main(){
     for(auto rec : vr){
         rec.showData(1);
     }
+
+    cout << "InsertAll: O(n) (El vector tiene n records, como se ordena en memoria principal, la inserción toma O(1) por cada elemento, ya que agrega siempre al final\n";
+    cout << "add: O(lgn) (Búsqueda binaria para buscar la posición a insertar, luego insertar en data o aux)\n";
+    cout << "Refactor: O(n+k) (Toma todos los registros (n en data y k en aux) y los agrega en forma ordenada en data, borra aux)\n";
+    cout << "Search: O(lgn + k) (Búsqueda binaria y luego búsqueda lineal en aux (si tiene)\n";
+    cout << "SearchRange: O(n+k) (Búsqueda en todos los registros en el peor caso (n en data y k en aux))\n";
     return 0;
 }
