@@ -3,7 +3,7 @@
 int main(){
     cout << "---------------Borrando archivos---------------\n";
     init();
-    Sequential seq("data", "aux");
+    Sequential seq("data", "daux");
     RecordSeq r;
     vector<RecordSeq> vr;
     r.setData(14);
