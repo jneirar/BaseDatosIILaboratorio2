@@ -41,14 +41,14 @@ public:
         if(i){
             cout << "\nCodigo: " << codigo;
             cout << "\nNext : " << next;
-            cout << "\nFile : " << file << "\n\n";
+            cout << "\nNextFile : " << file << "\n\n";
         }else{
             cout << "\nCodigo: " << codigo;
             cout << "\nNombre: " << nombre;
             cout << "\nCarrera: " << carrera;
             cout << "\nCiclo : " << ciclo;
             cout << "\nNext : " << next;
-            cout << "\nFile : " << file << "\n\n";
+            cout << "\nNextFile : " << file << "\n\n";
         }
     }
     void setNext(long _next, char _file){

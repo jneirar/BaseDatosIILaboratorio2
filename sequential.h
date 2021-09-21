@@ -79,8 +79,36 @@ private:
 
     }
 
-    long binarySearch(){
-        return 0;
+    long binarySearch(int key){
+        long res = 0;
+        fopen(fileName);
+        isfopen{
+            RecordSeq tmp;
+            //Menor
+            f.seekg(0, ios::beg);
+            read(f, tmp);
+            if(key <= tmp.getKey()) {f.close(); return 0;}
+            //Mayor
+            f.seekg((sizeData-1)*sizeof(tmp), ios::beg);
+            read(f, tmp);
+            if(key >= tmp.getKey()) {f.close(); return (sizeData-1)*sizeof(tmp);}
+            
+            int lo = 0;
+            int hi = sizeData - 1;
+            int mi;
+            while(1){
+                mi = (lo+hi)/2;
+                if(mi == lo) break;
+                f.seekg(mi * sizeof(tmp), ios::beg);
+                read(f, tmp);
+                if(key == tmp.getKey()) break;
+                else if(key < tmp.getKey()) hi = mi;
+                else lo = mi;
+            }
+            f.close();
+            return mi * sizeof(tmp);
+        }else cout << "Error al abrir data en binarySearch\n";
+        return res;
     }
 
     long linealSearch(int key){
@@ -135,18 +163,18 @@ public:
                 read(f, tmp);
                 long next = tmp.getNext();
                 char file = tmp.getFile();
-                cout << "\n" << "data:" << ":";
+                cout << "\n" << "data:";
                 tmp.showData(1);
                 
                 while(next != -1){
                     if(file == 'd'){
                         f.seekg(next, ios::beg);
                         read(f, tmp);
-                        cout << "\n" << "data:" << ":";
+                        cout << "data:";
                     }else if(file == 'a'){
                         fa.seekg(next, ios::beg);
                         read(fa, tmp);
-                        cout << "\n" << "aux:" << ":";
+                        cout << "aux:";
                     }else{ cout << "Algó falló\n"; f.close(); fa.close(); return;}
                     tmp.showData(1);
                     next = tmp.getNext();
@@ -171,7 +199,7 @@ public:
             }else cout << "Error al abrir archivo data en add, sizeData = 0\n";
         }else{
             //Hay datos, ubicar la posicion
-            long pos = linealSearch(record.getKey());
+            long pos = binarySearch(record.getKey());
             fopen(fileName);
             isfopen{
                 RecordSeq tmp;
@@ -250,7 +278,7 @@ public:
 
     RecordSeq search(int key){
         RecordSeq dump;
-        long pos = linealSearch(key);
+        long pos = binarySearch(key);
         fopen(fileName);
         isfopen{
             f.seekg(pos, ios::beg);
@@ -290,7 +318,7 @@ public:
     }
     vector<RecordSeq> search(int begin, int end){
         vector<RecordSeq> result;
-        long pos = linealSearch(begin);
+        long pos = binarySearch(begin);
         char file;
         RecordSeq dump;
         fopen(fileName);
