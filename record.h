@@ -24,11 +24,15 @@ public:
         this->ciclo = codigo;
     }
 
-    void showData() {
-        cout << "\nCodigo: " << codigo;
-        cout << "\nNombre: " << nombre;
-        cout << "\nCarrera: " << carrera;
-        cout << "\nCiclo : " << ciclo << "\n\n";
+    void showData(int i=0) {
+        if(i){
+            cout << "\nCodigo: " << codigo << "\n";
+        }else{
+            cout << "\nCodigo: " << codigo;
+            cout << "\nNombre: " << nombre;
+            cout << "\nCarrera: " << carrera;
+            cout << "\nCiclo : " << ciclo << "\n";
+        }
     }
 
     int getKey(){
