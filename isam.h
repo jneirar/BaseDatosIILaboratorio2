@@ -126,18 +126,16 @@ private:
         }else cout << "Error al abrir data en refactor\n";
     }
     long searchIndex(int key){
-        if(levels == 1){
+        if(levels == 1)
             return index1.search_page(key);
-        }else if(levels == 2){
-        }else{
-        }
+        else if(levels == 2) return 0;
+        else return 0;
     }
     int searchIndexIdx(int key){
         if(levels == 1){
             return index1.search_page_idx(key);
-        }else if(levels == 2){
-        }else{
-        }
+        }else if(levels == 2)   return 0;
+        else return 0;
     }
 public:
     ISAM(string _fileName, string _indexName) {
