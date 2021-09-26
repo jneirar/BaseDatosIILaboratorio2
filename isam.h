@@ -10,13 +10,8 @@
 //Supoción 4: Los datapages linkeados tienen registros, pero no están ordenados entre sí
 
 #define K 3 //Cantidad de registros por page
-#define M 10 //Cantidad de índices por page
+#define M 5 //Cantidad de índices por page
 #define L 2 //Cantidad máx de linked datapages por datapage
-
-#define fopen(n) fstream f; f.open(n, ios::in|ios::out|ios::binary);
-#define faopen(n) fstream fa; fa.open(n, ios::in|ios::out|ios::binary);
-#define isfopen if(f.is_open())
-#define isfaopen if(fa.is_open())
 
 bool comp (Record& a, Record& b){
     return  a.getKey() < b.getKey();
@@ -90,6 +85,7 @@ private:
     
     int levels = 1; //Para saber cuántos niveles existen, mínimo hay un nivel, y se llama indexName + 1 + .data
     bool needRefactor = false;
+    bool needRefactorIndex = false;
     void refactor(){
         fopen(fileName);
         isfopen{
@@ -125,24 +121,92 @@ private:
                 add(record);
         }else cout << "Error al abrir data en refactor\n";
     }
+    void refactorIndex(){
+        if(levels == 1){
+            //Dividir el index1
+            IndexPage index2a;
+            IndexPage index2b;
+            index2a.insert_page(index1.pages[0]);
+            index2b.insert_page(index1.pages[index1.size/2]);
+            for(int i=0; i<index1.size-1; i++){
+                if(i < index1.size/2)
+                    index2a.insert_page(index1.pages[i+1], index1.keys[i]);
+                else
+                    index2b.insert_page(index1.pages[i+1], index1.keys[i]);
+            }
+            index1.size = 0;
+            index1.insert_page(0);
+            fopen(indexName+"2.dat");
+            isfopen{
+                f.seekp(0, ios::beg);
+                write(f, index2a);
+                f.seekp(0, ios::end);
+                index1.insert_page(f.tellp(), index2b.keys[0]);
+                write(f, index2b);
+                f.close();
+            }else cout << "Error al abrir index 2 en refactor Index\n";
+            
+            std::ofstream ofs;
+            ofs.open("index1.dat", std::ofstream::out | std::ofstream::trunc);
+            ofs.close();
+
+            f.open(indexName+"1.dat", ios::in|ios::out|ios::binary);
+            isfopen{
+                f.seekp(0, ios::beg);
+                write(f, index1);
+                f.close();
+            }else cout << "Error al abrir index1 en refactor Index\n";
+
+        }else{
+            //TODO
+        }
+    }
     long searchIndex(int key){
-        if(levels == 1)
+        if(levels == 1){
             return index1.search_page(key);
-        else if(levels == 2) return 0;
-        else return 0;
+        }else if(levels == 2){
+            auto pageIndex = index1.search_page(key);
+            IndexPage index2;
+            fopen(indexName + "2.dat");
+            isfopen{
+                f.seekp(pageIndex);
+                read(f, index2);
+                f.close();
+                return index2.search_page(key);
+            }else cout << "Error al abrir index2.dat\n";
+        }else{
+            //TODO
+        }
+        return 0;
     }
     int searchIndexIdx(int key){
         if(levels == 1){
             return index1.search_page_idx(key);
-        }else if(levels == 2)   return 0;
-        else return 0;
+        }else if(levels == 2){
+            auto pageIndex = index1.search_page(key);
+            IndexPage index2;
+            fopen(indexName + "2.dat");
+            isfopen{
+                f.seekp(pageIndex);
+                read(f, index2);
+                f.close();
+                return index2.search_page_idx(key);
+            }else cout << "Error al abrir index2.dat\n";
+        }else{
+        }
+        return 0;
     }
 public:
     ISAM(string _fileName, string _indexName) {
         this->fileName = _fileName + ".dat";
         this->indexName = _indexName;
-        if(exists(_indexName + "2.dat"))   levels += 1;
-        if(exists(_indexName + "3.dat"))   levels += 1;
+        if(exists(_indexName + "2.dat"))   
+            if(!isFileEmpty(_indexName + "2.dat"))
+                levels += 1;
+        if(exists(_indexName + "3.dat"))   
+            if(!isFileEmpty(_indexName + "3.dat"))
+                levels += 1;
+        cout << "Levels: " << levels << "\n";
         readIndex();
     }
     
@@ -152,20 +216,18 @@ public:
 
     //leer el indice desde disco
     void readIndex(){
-        fstream f;
-        f.open(indexName + "1.dat", ios::in | ios::binary);
-        if(f.is_open()){
-            f.read((char*) &index1, sizeof(index1));
+        fopen(indexName + "1.dat");
+        isfopen{
+            read(f, index1);
             f.close();
-        }else   cout << "Error al abrir index1.dat en readIndex\n";
+        }else cout << "Error al abrir index1.dat en readIndex\n";
     }
     
     //Regresa el indice al disco
     void writeIndex(){
-        fstream f;
-        f.open(indexName + "1.dat", ios::out | ios::binary);
-        if(f.is_open()){
-            f.write((char*) &index1, sizeof(index1));
+        fopen(indexName + "1.dat");
+        isfopen{
+            write(f, index1);
             f.close();
         }else   cout << "Error al abrir index1.dat en writeIndex\n";
     }
@@ -263,8 +325,8 @@ public:
                         write(f, newDataPage);
                         //Agregar al index un nuevo elemento
                         index1.insert_page(pageNew, newDataPage.records[0].getKey());
-                        //if(index1.is_full())
-                            //needRefactor = true;
+                        if(index1.is_full())
+                            needRefactorIndex = true;
                     }else{
                         //Si tiene linkeds, hay que buscar espacio en ellos, sino 
                         //Crear nuevo datapage y linkearlo
@@ -320,6 +382,11 @@ public:
             cout << "\nRefactor\n\n";
             needRefactor = false;
             refactor();
+        }
+        if(needRefactorIndex){
+            cout << "\nRefactor Index\n\n";
+            needRefactorIndex = false;
+            refactorIndex();
         }
     }
     

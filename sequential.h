@@ -3,11 +3,6 @@
 
 #include "recordSeq.h"
 
-#define fopen(n) fstream f; f.open(n, ios::in|ios::out|ios::binary);
-#define faopen(n) fstream fa; fa.open(n, ios::in|ios::out|ios::binary);
-#define isfopen if(f.is_open())
-#define isfaopen if(fa.is_open())
-
 #define K 5
 
 long sizeFile(string name){

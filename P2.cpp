@@ -71,7 +71,7 @@ int main(){
 
     cout << "add: O(1) (Busqueda lineal o binaria para buscar la posicion a insertar en index, luego insertar en data o aux)\n";
     cout << "\nRefactor: O(n+k) (Toma todos los registros (n datapages y k linkeados) y los agrega en forma ordenada en data, borra index)\n";
-    cout << "\nSearch: O(k) (Busqueda binaria o lineal para la posición y luego busqueda lineal en datapage y sus linkeados (si tiene)\n";
+    cout << "\nSearch: O(k) (Busqueda binaria o lineal para la posicion y luego busqueda lineal en datapage y sus linkeados (si tiene)\n";
     cout << "\nSearchRange: O(n+k) (Busqueda en todos los datapages en el peor caso (n datapages y k linkeados))\n";
     return 0;
 }
